@@ -14,5 +14,15 @@ func main() {
 	}
 
 	fmt.Println(u)
+	name := u.PrintName()
+
+	fmt.Println(name)
+	fmt.Println(u)
+
+	u.ChangeName("Cody", "Randell")
+	newName := u.PrintName()
+
+	fmt.Println(newName)
+	fmt.Println(u)
 
 }
