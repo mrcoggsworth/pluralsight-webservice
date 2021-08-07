@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -10,17 +11,61 @@ type User struct {
 	LastName  string
 }
 
-func (u *User) PrintName() string {
-	return fmt.Sprintf("First Name: %s, Last Name: %s", u.FirstName, u.LastName)
-}
-
-func (u *User) ChangeName(newFirstName, newLastName string) {
-	u.FirstName = newFirstName
-	u.LastName = newLastName
-
-}
-
 var (
 	users  []*User
 	nextID = 1
 )
+
+func GetUsers() []*User {
+	return users
+}
+
+func AddUser(u User) (User, error) {
+	if u.ID != 0 {
+		return User{}, errors.New("User must not contain ID or it must be set to ZERO")
+	}
+
+	u.ID = nextID
+	nextID++
+	users = append(users, &u)
+	return u, nil
+}
+
+func GetUserById(id int) (User, error) {
+	for _, u := range users {
+		if u.ID == id {
+			return *u, nil
+		}
+	}
+	return User{}, fmt.Errorf("User with id %v not found", id)
+}
+
+func UpdateUser(u User) (User, error) {
+	for i, candidate := range users {
+		if candidate.ID == u.ID {
+			users[i] = &u
+			return u, nil
+		}
+	}
+	return User{}, fmt.Errorf("User with id %v not found", u.ID)
+}
+
+func RemoveUser(id int) error {
+	for i, u := range users {
+		if u.ID == id {
+			users = append(users[:i], users[i+1:]...)
+			return nil
+		}
+	}
+	return fmt.Errorf("User with id %v not found", id)
+}
+
+// func (u *User) PrintName() string {
+// 	return fmt.Sprintf("First Name: %s, Last Name: %s", u.FirstName, u.LastName)
+// }
+
+// func (u *User) ChangeName(newFirstName, newLastName string) {
+// 	u.FirstName = newFirstName
+// 	u.LastName = newLastName
+
+// }
